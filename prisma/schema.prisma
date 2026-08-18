@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Member model based on your requirements
+model Member {
+  id               String      @id @default(cuid())
+  fullName         String
+  age              Int
+  address          String
+  phone            String
+  emergencyPhone   String
+  registrationDate DateTime    @default(now())
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  payments         Payment[]
+  editLogs         EditLog[]
+  status           String      @default("active") // active, expired
+}
+
+// Payment tracking model for 28-day cycles
+model Payment {
+  id             String         @id @default(cuid())
+  // අනාත දත්ත මැකී යාමට මෙතනට onDelete: Cascade එකතු කර ඇත
+  member         Member         @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId       String
+  paymentDate    DateTime       // staff-selected date
+  amount         Decimal
+  isPaid         Boolean        @default(false)
+  expiryDate     DateTime       // auto = paymentDate + 28 days
+  invoiceUrl     String?        // URL to generated PDF
+  invoiceSentAt  DateTime?
+  createdAt      DateTime       @default(now())
+
+  notifications  Notification[]
+}
+
+// Audit log for member edits
+model EditLog {
+  id          String   @id @default(cuid())
+  // අනාත දත්ත මැකී යාමට මෙතනට onDelete: Cascade එකතු කර ඇත
+  member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId    String
+  fieldName   String
+  oldValue    String
+  newValue    String
+  editedAt    DateTime @default(now())
+  editedBy    String   // staff username
+}
+
+// Notification tracking for 28-day and 26-day events
+model Notification {
+  id             String   @id @default(cuid())
+  payment        Payment  @relation(fields: [paymentId], references: [id])
+  paymentId      String
+  type           String   // "28_DAY_REACHED" | "RENEWAL_REMINDER_2_DAYS"
+  triggeredAt    DateTime @default(now())
+  acknowledged   Boolean  @default(false)
+}
+
+// Staff authentication model
+model Staff {
+  id       String @id @default(cuid())
+  username String @unique
+  password String // hashed
+  role     String @default("staff") // admin, staff
+}
