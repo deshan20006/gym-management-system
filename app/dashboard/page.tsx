@@ -41,10 +41,10 @@ export default async function DashboardPage() {
           </p>
         </div>
         
-        {/* Button */}
+        {/* Button - Updated to match Glass/Faded Theme */}
         <Link 
           href="/dashboard/members/new"
-          className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all font-medium shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-500/50 flex items-center gap-2 z-10"
+          className="px-6 py-2.5 text-sm font-bold text-white bg-blue-600/80 border border-blue-500/50 hover:bg-blue-600 rounded-xl transition shadow-md flex items-center justify-center gap-2 z-10"
         >
           <span>+ Add New Member</span>
         </Link>
