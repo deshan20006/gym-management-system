@@ -127,4 +127,31 @@
   html {
     @apply font-sans;
   }
-}  
+}
+
+/* --- New Glassmorphism and Background Styles --- */
+
+body {
+  /* Removed linear-gradient overlay completely for a clear background */
+  background-image: url('/gym-bg.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  color: #e5e7eb;
+}
+
+.glass-card {
+  /* Adjusted for a cleaner frosted glass look */
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.glass-panel {
+  background: rgba(15, 15, 20, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}

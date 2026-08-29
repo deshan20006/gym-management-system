@@ -2,62 +2,76 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
-// Next.js Server Component to display the list of gym members
+function formatToYYYYMMDD(date: Date | string) {
+  const d = new Date(date);
+  return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+}
+
 export default async function MembersPage() {
-  // Fetch all members from the database
-  const members = await prisma.member.findMany();
+  const members = await prisma.member.findMany({ orderBy: { registrationDate: 'desc' } });
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Gym Members</h1>
+    <div className="space-y-8 max-w-7xl mx-auto">
+      
+      {/* Header Section with Button */}
+      <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4 mb-4 pr-12 md:pr-0">
+        
+        {/* Dark Glass Box for Heading Readability */}
+        <div className="bg-black/40 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 shadow-2xl">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-wide drop-shadow-lg">
+            Gym Members
+          </h1>
+        </div>
+        
+        {/* Button color changed to Blue */}
         <Link 
           href="/dashboard/members/new"
-          className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-sm"
+          className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all font-medium shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-500/50 z-10"
         >
           + Add New Member
         </Link>
       </div>
       
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      {/* Members Table with beautiful Blur Effect */}
+      <div className="bg-white/10 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-2xl p-4 md:p-6 overflow-hidden">
         {members.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">
+          <div className="p-12 text-center text-gray-200 text-lg font-medium">
             No members found. Add a new member to get started.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left text-sm whitespace-nowrap">
               <thead>
-                <tr className="bg-slate-50 border-b border-gray-100 text-sm text-slate-600 uppercase tracking-wider">
-                  <th className="p-4 font-semibold">Name</th>
-                  <th className="p-4 font-semibold">Phone</th>
-                  <th className="p-4 font-semibold">Age</th>
-                  <th className="p-4 font-semibold">Status</th>
-                  <th className="p-4 font-semibold">Joined Date</th>
+                <tr className="border-b border-white/20 text-gray-200 font-bold tracking-wider text-sm">
+                  <th className="pb-4 px-4 uppercase">Name</th>
+                  <th className="pb-4 px-4 uppercase">Phone</th>
+                  <th className="pb-4 px-4 uppercase">Age</th>
+                  <th className="pb-4 px-4 uppercase">Status</th>
+                  <th className="pb-4 px-4 uppercase">Joined Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-white/10">
                 {members.map((member) => (
-                  <tr key={member.id} className="hover:bg-slate-50/50 transition">
-                    {/* Member name is now a clickable link leading to their unique profile page */}
-                    <td className="p-4 font-medium text-gray-900">
-                      <Link href={`/dashboard/members/${member.id}`} className="text-blue-600 hover:underline">
+                  <tr key={member.id} className="hover:bg-white/10 transition duration-200">
+                    <td className="py-5 px-4 font-semibold text-base">
+                      {/* Name changed to White */}
+                      <Link href={`/dashboard/members/${member.id}`} className="text-white hover:text-gray-300 transition drop-shadow-md">
                         {member.fullName}
                       </Link>
                     </td>
-                    <td className="p-4 text-gray-600">{member.phone}</td>
-                    <td className="p-4 text-gray-600">{member.age}</td>
-                    <td className="p-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${
+                    <td className="py-5 px-4 text-white font-medium text-base">{member.phone}</td>
+                    <td className="py-5 px-4 text-white font-medium text-base">{member.age}</td>
+                    <td className="py-5 px-4">
+                      <span className={`px-3 py-1.5 rounded-full text-[11px] font-extrabold border tracking-widest uppercase shadow-sm ${
                         member.status === 'active' 
-                          ? 'bg-green-100 text-green-700' 
-                          : 'bg-red-100 text-red-700'
+                          ? 'bg-green-500/20 text-green-400 border-green-500/30' 
+                          : 'bg-red-500/20 text-red-400 border-red-500/30'
                       }`}>
-                        {member.status.toUpperCase()}
+                        {member.status}
                       </span>
                     </td>
-                    <td className="p-4 text-gray-600">
-                      {new Date(member.registrationDate).toLocaleDateString()}
+                    <td className="py-5 px-4 text-white font-medium text-base">
+                      {formatToYYYYMMDD(member.registrationDate)}
                     </td>
                   </tr>
                 ))}
