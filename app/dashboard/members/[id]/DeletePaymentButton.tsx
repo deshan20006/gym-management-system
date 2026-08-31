@@ -11,7 +11,7 @@ export default function DeletePaymentButton() {
           e.preventDefault(); // Stop form submission if user clicks 'Cancel'
         }
       }}
-      className="text-red-500 hover:text-red-700 font-medium text-xs bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded transition border border-red-100"
+      className="text-red-300 hover:text-red-200 font-bold text-xs bg-red-950/40 hover:bg-red-900/60 px-3 py-1.5 rounded-lg transition border border-red-900/50 shadow-sm"
     >
       Remove
     </button>

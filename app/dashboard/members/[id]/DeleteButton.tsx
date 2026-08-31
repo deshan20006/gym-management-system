@@ -11,7 +11,7 @@ export default function DeleteButton() {
           e.preventDefault(); // Cancels the deletion if 'Cancel' is clicked
         }
       }}
-      className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 font-medium transition text-sm border border-red-100"
+      className="px-5 py-2.5 text-sm font-bold text-red-300 bg-red-950/40 border border-red-900/50 hover:bg-red-900/60 rounded-xl transition shadow-md flex items-center justify-center h-[42px]"
     >
       Delete Member
     </button>

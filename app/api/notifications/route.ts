@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// Next.js වල Cache වීම වළක්වා සෑමවිටම අලුත්ම Notifications ලබාගැනීමට
+
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
@@ -23,7 +23,7 @@ export async function GET() {
   }
 }
 
-// Notification එකක් Dismiss (කියෙව්වා යැයි සලකා මකා දැමීම) කළ විට ක්‍රියාත්මක වීමට
+
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

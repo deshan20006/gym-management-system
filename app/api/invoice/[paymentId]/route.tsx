@@ -30,7 +30,8 @@ const InvoicePDF = ({ payment }: { payment: any }) => {
     <Document>
       <Page size="A5" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.gymName}>FITNESS PRO</Text>
+          {/* නම MR.FITNESS GYM ලෙස වෙනස් කර ඇත */}
+          <Text style={styles.gymName}>MR.FITNESS GYM</Text>
           <Text style={styles.invoiceTitle}>Payment Receipt</Text>
         </View>
 
@@ -46,7 +47,6 @@ const InvoicePDF = ({ payment }: { payment: any }) => {
           </View>
           <View style={{ alignItems: "flex-end" }}>
             <Text style={styles.label}>Amount Paid</Text>
-            {/* FIXED: Added .toString() to handle Prisma Decimal objects */}
             <Text style={styles.value}>Rs. {payment.amount.toString()}</Text>
           </View>
         </View>
@@ -63,7 +63,8 @@ const InvoicePDF = ({ payment }: { payment: any }) => {
         </View>
 
         <View style={styles.footer}>
-          <Text>Thank you for choosing FITNESS PRO!</Text>
+          {/* Footer එකේද නම MR.FITNESS GYM ලෙස වෙනස් කර ඇත */}
+          <Text>Thank you for choosing MR.FITNESS GYM!</Text>
           <Text>System Generated Receipt.</Text>
         </View>
       </Page>

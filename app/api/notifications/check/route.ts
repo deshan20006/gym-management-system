@@ -36,7 +36,7 @@ export async function GET() {
       const existingNotif = await prisma.notification.findFirst({
         where: {
           paymentId: payment.id,
-          type: "RENEWAL_REMINDER_2_DAYS",
+          type: "RENEWAL__2_DAYS",
         },
       });
 
@@ -45,7 +45,7 @@ export async function GET() {
         await prisma.notification.create({
           data: {
             paymentId: payment.id,
-            type: "RENEWAL_REMINDER_2_DAYS",
+            type: "RENEWAL__2_DAYS",
           },
         });
         createdCount++;
