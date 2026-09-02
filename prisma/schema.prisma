@@ -26,7 +26,6 @@ model Member {
 // Payment tracking model for 28-day cycles
 model Payment {
   id             String         @id @default(cuid())
-  // අනාත දත්ත මැකී යාමට මෙතනට onDelete: Cascade එකතු කර ඇත
   member         Member         @relation(fields: [memberId], references: [id], onDelete: Cascade)
   memberId       String
   paymentDate    DateTime       // staff-selected date
@@ -43,7 +42,6 @@ model Payment {
 // Audit log for member edits
 model EditLog {
   id          String   @id @default(cuid())
-  // අනාත දත්ත මැකී යාමට මෙතනට onDelete: Cascade එකතු කර ඇත
   member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
   memberId    String
   fieldName   String
@@ -65,8 +63,11 @@ model Notification {
 
 // Staff authentication model
 model Staff {
-  id       String @id @default(cuid())
-  username String @unique
-  password String // hashed
-  role     String @default("staff") // admin, staff
+  id                String    @id @default(cuid())
+  username          String    @unique
+  email             String?   @unique // Password reset link 
+  password          String    // hashed
+  role              String    @default("staff") // admin, staff
+  resetToken        String?   // reset code
+  resetTokenExpiry  DateTime? // code expiring time
 }
