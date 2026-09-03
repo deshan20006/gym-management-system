@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     }
 
     // 1. Check if the staff member exists
-    const user = await prisma.staff.findUnique({
+    const user = await (prisma as any).staff.findUnique({
       where: { email },
     });
 
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     const resetTokenExpiry = new Date(Date.now() + 3600000); // Token valid for 1 hour
 
     // 3. Save the token and expiry time in the database
-    await prisma.staff.update({
+    await (prisma as any).staff.update({
       where: { email },
       data: {
         resetToken,
