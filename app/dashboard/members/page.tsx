@@ -51,7 +51,7 @@ export default async function MembersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10">
-                {members.map((member) => (
+                {members.map((member: any) => (
                   <tr key={member.id} className="hover:bg-white/10 transition duration-200">
                     <td className="py-5 px-4 font-semibold text-base">
                       {/* Name changed to White */}

@@ -98,7 +98,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
         {/* Dark Glass Box for Member Name */}
         <div className="bg-black/40 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 shadow-2xl">
           <h1 className="text-3xl font-extrabold text-white tracking-wide drop-shadow-lg">
-            {member.fullName}'s Profile
+            {member.fullName}&apos;s Profile
           </h1>
         </div>
         
@@ -108,7 +108,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
             <DeleteButton />
           </form>
 
-          {/* Back Button - වැඩිපුර කැපිලා පේන අඳුරු වීදුරු පසුබිමකින් සකසා ඇත */}
+          
           <Link 
             href="/dashboard/members" 
             className="px-5 py-2.5 text-sm font-bold text-white bg-black/60 border border-white/30 hover:bg-black/80 rounded-xl transition shadow-xl flex items-center justify-center h-[42px]"
@@ -192,11 +192,10 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/10">
-                    {member.payments.map((payment) => {
+                    {member.payments.map((payment: any) => {
                       
                       const invoiceUrl = `http://localhost:3000/api/invoice/${payment.id}`;
                       
-                      // WhatsApp පණිවිඩයේ නම "MR.FITNESS GYM" ලෙස නිවැරදි කර ඇත
                       const invoiceMsg = `Hi ${member.fullName},\n\nThank you for your payment of Rs. ${payment.amount} at MR.FITNESS GYM.\n\nPayment Date: ${formatToYYYYMMDD(payment.paymentDate)}\nValid Until: ${formatToYYYYMMDD(payment.expiryDate)}\n\nYou can view and download your receipt here:\n${invoiceUrl}\n\nThank you!`;
                       
                       const waLink = buildWhatsAppLink(member.phone, invoiceMsg);
