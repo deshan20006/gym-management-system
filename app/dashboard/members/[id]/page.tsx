@@ -194,7 +194,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
                   <tbody className="divide-y divide-white/10">
                     {member.payments.map((payment: any) => {
                       
-                      const invoiceUrl = `http://localhost:3000/api/invoice/${payment.id}`;
+                      const invoiceUrl = `https://gym-management-system-phi-ten.vercel.app/api/invoice/${payment.id}`;
                       
                       const invoiceMsg = `Hi ${member.fullName},\n\nThank you for your payment of Rs. ${payment.amount} at MR.FITNESS GYM.\n\nPayment Date: ${formatToYYYYMMDD(payment.paymentDate)}\nValid Until: ${formatToYYYYMMDD(payment.expiryDate)}\n\nYou can view and download your receipt here:\n${invoiceUrl}\n\nThank you!`;
                       
