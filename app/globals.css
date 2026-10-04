@@ -133,7 +133,7 @@
 
 body {
   /* Removed linear-gradient overlay completely for a clear background */
-  background-image: url('/gym-bg.jpg') !important;
+  background-image: url('/gym-bg.png') !important;
   background-size: cover !important;
   background-position: center !important;
   background-attachment: fixed !important;
