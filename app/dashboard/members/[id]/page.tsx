@@ -29,7 +29,6 @@ async function addPayment(formData: FormData) {
   const paymentDate = new Date(year, month - 1, day);
   
   const expiryDate = new Date(paymentDate);
-  // Add exactly 1 month to the payment date
   expiryDate.setMonth(expiryDate.getMonth() + 1);
 
   await prisma.payment.create({
@@ -73,9 +72,45 @@ async function deletePayment(formData: FormData) {
   revalidatePath(`/dashboard/members/${memberId}`);
 }
 
-export default async function MemberProfilePage({ params }: { params: Promise<{ id: string }> }) {
+// 4. අලුතින් එකතු කරපු Server action එක (Member ගේ විස්තර Update කිරීමට)
+async function updateMember(formData: FormData) {
+  "use server";
+
+  const memberId = formData.get("memberId") as string;
+  const fullName = formData.get("fullName") as string;
+  const age = parseInt(formData.get("age") as string, 10);
+  const phone = formData.get("phone") as string;
+  const emergencyPhone = formData.get("emergencyPhone") as string;
+  const address = formData.get("address") as string;
+
+  await prisma.member.update({
+    where: { id: memberId },
+    data: {
+      fullName,
+      age,
+      phone,
+      emergencyPhone,
+      address
+    }
+  });
+
+  revalidatePath(`/dashboard/members/${memberId}`);
+  redirect(`/dashboard/members/${memberId}`);
+}
+
+// Component එකට searchParams එකතු කරලා තියෙනවා (Edit mode එක අඳුරගන්න)
+export default async function MemberProfilePage({ 
+  params,
+  searchParams
+}: { 
+  params: Promise<{ id: string }>,
+  searchParams: Promise<{ edit?: string }>
+}) {
   const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  
   const memberId = resolvedParams.id;
+  const isEditing = resolvedSearchParams.edit === 'true'; // Edit බටන් එක ඔබලද කියලා බලනවා
 
   const member = await prisma.member.findUnique({
     where: { id: memberId },
@@ -103,12 +138,22 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
         </div>
         
         <div className="flex items-center gap-3">
+          
+          {/* Edit Button (Edit mode එකේ නැති වෙලාවට විතරක් පෙන්වයි) */}
+          {!isEditing && (
+            <Link 
+              href={`/dashboard/members/${member.id}?edit=true`}
+              className="px-5 py-2.5 text-sm font-bold text-white bg-blue-600/80 border border-blue-500/30 hover:bg-blue-600 rounded-xl transition shadow-xl flex items-center justify-center h-[42px]"
+            >
+              Edit
+            </Link>
+          )}
+
           <form action={deleteMember}>
             <input type="hidden" name="memberId" value={member.id} />
             <DeleteButton />
           </form>
 
-          
           <Link 
             href="/dashboard/members" 
             className="px-5 py-2.5 text-sm font-bold text-white bg-black/60 border border-white/30 hover:bg-black/80 rounded-xl transition shadow-xl flex items-center justify-center h-[42px]"
@@ -120,16 +165,64 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         
-        {/* Left Column: Member Details (Glass Effect) */}
+        {/* Left Column: Member Details OR Edit Form */}
         <div className="bg-white/10 backdrop-blur-2xl p-6 rounded-2xl shadow-2xl border border-white/10 h-fit">
-          <h2 className="text-xl font-bold text-white mb-4 border-b border-white/20 pb-3">Details</h2>
-          <div className="space-y-4 text-sm text-gray-300 mt-5">
-            <p className="flex flex-col"><span className="font-semibold text-blue-200 text-xs uppercase tracking-wider mb-1">Age</span> <span className="text-white text-base font-medium">{member.age}</span></p>
-            <p className="flex flex-col"><span className="font-semibold text-blue-200 text-xs uppercase tracking-wider mb-1">Phone</span> <span className="text-white text-base font-medium">{member.phone}</span></p>
-            <p className="flex flex-col"><span className="font-semibold text-blue-200 text-xs uppercase tracking-wider mb-1">Emergency Contact</span> <span className="text-white text-base font-medium">{member.emergencyPhone}</span></p>
-            <p className="flex flex-col"><span className="font-semibold text-blue-200 text-xs uppercase tracking-wider mb-1">Joined Date</span> <span className="text-white text-base font-medium">{formatToYYYYMMDD(member.registrationDate)}</span></p>
-            <p className="flex flex-col"><span className="font-semibold text-blue-200 text-xs uppercase tracking-wider mb-1">Address</span> <span className="text-white text-base font-medium leading-relaxed">{member.address}</span></p>
-          </div>
+          
+          {isEditing ? (
+            /* --- Edit Mode Form --- */
+            <>
+              <h2 className="text-xl font-bold text-white mb-4 border-b border-white/20 pb-3">Edit Details</h2>
+              <form action={updateMember} className="space-y-4">
+                <input type="hidden" name="memberId" value={member.id} />
+                
+                <div>
+                  <label className="block text-xs font-semibold text-blue-200 uppercase mb-1">Full Name</label>
+                  <input type="text" name="fullName" defaultValue={member.fullName} required className="w-full bg-white/5 border border-white/10 text-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/50" />
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-semibold text-blue-200 uppercase mb-1">Age</label>
+                  <input type="number" name="age" defaultValue={member.age} required className="w-full bg-white/5 border border-white/10 text-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/50" />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-blue-200 uppercase mb-1">Phone</label>
+                  <input type="text" name="phone" defaultValue={member.phone} required className="w-full bg-white/5 border border-white/10 text-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/50" />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-blue-200 uppercase mb-1">Emergency Contact</label>
+                  <input type="text" name="emergencyPhone" defaultValue={member.emergencyPhone} required className="w-full bg-white/5 border border-white/10 text-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/50" />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-blue-200 uppercase mb-1">Address</label>
+                  <textarea name="address" defaultValue={member.address} required rows={2} className="w-full bg-white/5 border border-white/10 text-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/50" />
+                </div>
+
+                <div className="flex gap-2 mt-6 pt-4 border-t border-white/10">
+                  <button type="submit" className="flex-1 bg-green-600/80 hover:bg-green-600 text-white font-bold py-2.5 rounded-xl transition shadow-md">
+                    Save
+                  </button>
+                  <Link href={`/dashboard/members/${member.id}`} className="flex-1 bg-gray-600/80 hover:bg-gray-600 text-white font-bold py-2.5 rounded-xl transition shadow-md flex items-center justify-center">
+                    Cancel
+                  </Link>
+                </div>
+              </form>
+            </>
+          ) : (
+            /* --- Normal View Mode --- */
+            <>
+              <h2 className="text-xl font-bold text-white mb-4 border-b border-white/20 pb-3">Details</h2>
+              <div className="space-y-4 text-sm text-gray-300 mt-5">
+                <p className="flex flex-col"><span className="font-semibold text-blue-200 text-xs uppercase tracking-wider mb-1">Age</span> <span className="text-white text-base font-medium">{member.age}</span></p>
+                <p className="flex flex-col"><span className="font-semibold text-blue-200 text-xs uppercase tracking-wider mb-1">Phone</span> <span className="text-white text-base font-medium">{member.phone}</span></p>
+                <p className="flex flex-col"><span className="font-semibold text-blue-200 text-xs uppercase tracking-wider mb-1">Emergency Contact</span> <span className="text-white text-base font-medium">{member.emergencyPhone}</span></p>
+                <p className="flex flex-col"><span className="font-semibold text-blue-200 text-xs uppercase tracking-wider mb-1">Joined Date</span> <span className="text-white text-base font-medium">{formatToYYYYMMDD(member.registrationDate)}</span></p>
+                <p className="flex flex-col"><span className="font-semibold text-blue-200 text-xs uppercase tracking-wider mb-1">Address</span> <span className="text-white text-base font-medium leading-relaxed">{member.address}</span></p>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Right Column: Add Payment Form & History */}
