@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     });
 
     // The link that the user will click to reset the password
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
     // 5. Send the email
