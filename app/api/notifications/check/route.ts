@@ -1,20 +1,31 @@
-// app/api/notifications/check/route.ts
-
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+
+export async function GET(request: NextRequest) {
+  
+  
+  const authHeader = request.headers.get('authorization');
+  
+  
+  if (
+    process.env.NODE_ENV === 'production' && 
+    authHeader !== `Bearer ${process.env.CRON_SECRET}`
+  ) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  
+
   try {
     // Get today's date and set time to 00:00:00 for accurate day comparison
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     // Calculate the target expiry date (2 days from today)
-    // Note: 2 days from today means 28 days have passed since the 30-day payment cycle started.
     const targetDate = new Date(today);
     targetDate.setDate(targetDate.getDate() + 2);
 
-    // Calculate the upper bound (the next day) to capture the full 24 hours of the target date
+    // Calculate the upper bound (the next day) to capture the full 24 hours
     const nextDay = new Date(targetDate);
     nextDay.setDate(nextDay.getDate() + 1);
 
